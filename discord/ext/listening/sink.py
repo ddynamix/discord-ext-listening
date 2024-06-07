@@ -7,6 +7,7 @@ import threading
 from collections import defaultdict
 from concurrent.futures import Future
 from dataclasses import dataclass
+from datetime import datetime
 from time import monotonic
 from typing import TYPE_CHECKING, Any, BinaryIO, Callable, Dict, List, Optional, Sequence, Tuple, Union
 
@@ -864,12 +865,13 @@ class AudioFileSink(AudioHandlingSink):
         return result
 
     def _create_name(self, file: 'AudioFile') -> str:
+        timestamp = file.time_create.strftime("%Y%m%d%H%M%S")
         if file.user is None:
-            return f"audio-{file.ssrc}"
+            return f"audio-{file.ssrc}-{timestamp}"
         elif isinstance(file.user, Object):
-            return f"audio-{file.user.id}-{file.ssrc}"
+            return f"audio-{file.user.id}-{file.ssrc}-{timestamp}"
         else:
-            return f"audio-{file.user.name}#{file.user.discriminator}-{file.ssrc}"
+            return f"audio-{file.user.name}#{file.user.discriminator}-{file.ssrc}-{timestamp}"
 
 
 def get_new_path(path: str, ext: str, new_name: Optional[str] = None):
@@ -922,6 +924,8 @@ class AudioFile:
         User of this audio file
     path: :class:`str`
         Path to the file object.
+    time_create: :class:`datetime`
+        The datetime when the AudioFile object was created.
     """
 
     __slots__ = (
@@ -935,6 +939,7 @@ class AudioFile:
         "_packet_count",
         "user",
         "_clean_lock",
+        "time_create",
     )
 
     FRAME_BUFFER_LIMIT = 10
@@ -946,6 +951,7 @@ class AudioFile:
         self.converted: bool = False
         self.user: Optional[Union[Member, Object]] = None
         self.path: str = self.file.name
+        self.time_create = datetime.now()  # Initialize time_create with the current datetime
         self._clean_lock: threading.Lock = threading.Lock()
 
         self._last_timestamp: Optional[int] = None
