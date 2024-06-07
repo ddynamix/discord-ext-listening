@@ -2,6 +2,8 @@ This is a [discord.py](https://github.com/rapptz/discord.py/) extension with fun
 channels. It uses Python's standard multiprocessing library for audio processing, striving for efficiency and a 
 flexible design.
 
+This in partiuclar is a fork of the vc recorder from Sheppsu. I just added the functionality that adds timestamps on the end of filenames.
+
 # How to use
 `pip install git+https://github.com/ddynamix/discord-ext-listening`
 
